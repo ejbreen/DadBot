@@ -1,0 +1,8 @@
+{
+  "name": "RockeTimer-bot",
+  "version": "1.0.0",
+  "description": "Coordinates WS rocket salvos",
+  "main": "bot.js",
+  "author": "JeanLucPicard",
+  "dependencies": {}
+}
