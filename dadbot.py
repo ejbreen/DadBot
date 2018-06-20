@@ -148,7 +148,11 @@ def save_state(dadcorp):
 
 #dadcorp = pickle.load(open('./dadcorp.p','rb'))
 
+#main token
 token = "NDU1ODI2Nzg0NjM0NjY3MDA4.DgBpXQ.O7-auA1eh3OxEmiHpVqcIhd7438"
+
+#test bot token
+#token = ""
 
 bot = commands.Bot(command_prefix='?')
 
@@ -200,10 +204,13 @@ async def echo(*, message: str):
 
 @bot.command(pass_context=True)
 async def add_me(ctx):
-    if dadcorp.find_dad(ctx.message.author)==False:
+    if dadcorp.find_dad(ctx.message.author.mention)==False:
         print('adding %s, (%s) to dadcorp'%(ctx.message.author.display_name,ctx.message.author.mention))
         d = dad(ctx.message.author.mention, ctx.message.author.display_name)
         dadcorp.add_a_dad(d)
+        await bot.say("%s added"%(d.name))
+    else:
+        await bot.say("No need, you're already on the roster")
     save_state(dadcorp)
    
 @bot.command(pass_context=True)
@@ -211,12 +218,15 @@ async def set_rs_level(ctx, rs_level:int):
     d = dadcorp.find_dad(ctx.message.author.mention)
     d.change_RSLevel(rs_level)
     save_state(dadcorp)
+    await bot.say("set %s's maximum RS level to %i"%(d.name, d.RSLevel))
      
 @bot.command(pass_context=True)
 async def free_for(ctx, hour:int, minute:int):
     d = dadcorp.find_dad(ctx.message.author.mention)
     d.free_for(timedelta(hours=hour, minutes=minute))
     save_state(dadcorp)
+    await bot.say("Got it, %s's free for the next %i hours and %i minutes"%(d.name, hour, minute))
+    
     
 @bot.command()
 async def whos_free(rs_level:int = 5):
@@ -232,6 +242,11 @@ async def ping_free(rs_level:int = 5):
         if d.RSLevel >= rs_level:
             await bot.say("%s"%(d.userID))
     await bot.say("If your max RS level is wrong, change with the ?set_rs_level command")
+
+@bot.command()
+async def list_dads():
+    for d in dadcorp.dads:
+        await bot.say("%s, RS%i"%(d.name, d.RSLevel))
 
 @bot.command()
 async def die():
